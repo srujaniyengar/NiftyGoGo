@@ -1,11 +1,11 @@
 package utils
 
 import "log"
-// Check logs an error message and exits the program if an error is found.
-// This prevents redundant error checking throughout the code.
+
+// Check handles errors by logging and panicking if an error is encountered.
 func Check(err error) {
-    if err != nil {
-        log.Println("Error:", err)
-    }
+	if err != nil {
+		log.Panic(err)
+	}
 }
 
