@@ -1,0 +1,3 @@
+[submodule "utils/utils/bubbletea"]
+	path = utils/utils/bubbletea
+	url = https://github.com/charmbracelet/bubbletea.git
