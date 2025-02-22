@@ -1,15 +1,11 @@
-package utils  
-import "fmt"  
+package utils
 
-/** 
- * THIS MOD IS ONLY FOR CONVENIENT USE OF EXCEPTION HANDLING.  
- * THIS FUNCTION TAKES ANY ERROR AND PRINTS AN ERROR MESSAGE IF THE PROVIDED VALUE IS NOT NIL.  
- * THIS PREVENTS REDUNDANT ERROR CHECKING THROUGHOUT THE CODE.  
- */
-func Check(err any) (map_flag any, error_flag any) {
+import "log"
+// Check logs an error message and exits the program if an error is found.
+// This prevents redundant error checking throughout the code.
+func Check(err error) {
     if err != nil {
-        fmt.Println(err, "Error")
-        return nil, err
+        log.Println("Error:", err)
     }
-    return true, nil  // Return default values when no error
 }
+
