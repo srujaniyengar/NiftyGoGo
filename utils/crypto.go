@@ -2,38 +2,57 @@ package utils
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"io"
 	"net/http"
 )
 
 /**
- * GetCryptoData fetches cryptocurrency prices from the given API URL
- * and prints only the requested symbols. It sends a GET request,
- * parses the JSON response, and filters the results.
+ * crypto.go - Fetch cryptocurrency prices from an API.
+ * Steps: fetch → read → parse → filter
  */
+
 type PriceData struct {
 	Symbol string `json:"symbol"`
 	Price  string `json:"price"`
 }
 
-func GetCryptoData(apiURL string, symbols []string) {
-	response, err := http.Get(apiURL)
-	Check(err)
-	defer response.Body.Close()
+// GetCryptoData fetches cryptocurrency prices from the given API URL
+// and returns a map of symbols to their prices.
+func GetCryptoData(apiURL string, symbols []string) (map[string]string, error) {
+	// fetch: GET request to API
+	resp, err := http.Get(apiURL)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
 
-	body, err := io.ReadAll(response.Body)
-	Check(err)
+	// read: API response body
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
 
+	// parse: JSON response into PriceData struct
 	var prices []PriceData
-	err = json.Unmarshal(body, &prices)
-	Check(err)
+	if err := json.Unmarshal(body, &prices); err != nil {
+		return nil, err
+	}
 
+	// filter: Store only requested symbols in a map
+	priceMap := make(map[string]string)
 	for _, p := range prices {
-		for _, symbol := range symbols {
-			if p.Symbol == symbol {
-				fmt.Printf("%s: $%s\n", p.Symbol, p.Price)
+		for _, s := range symbols {
+			if p.Symbol == s {
+				priceMap[p.Symbol] = p.Price
 			}
 		}
 	}
+
+	// return: Error if no matching symbols found
+	if len(priceMap) == 0 {
+		return nil, errors.New("no matching symbols found")
+	}
+
+	return priceMap, nil
 }
