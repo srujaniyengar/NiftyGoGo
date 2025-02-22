@@ -1,0 +1,29 @@
+
+# Binaries and executables
+NiftyGoGo
+NiftyGoGo.exe
+*.exe
+*.out
+*.o
+
+# Go modules
+go.mod
+go.sum
+
+# Compiled files
+bin/
+build/
+dist/
+
+# Logs and debug files
+*.log
+debug/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
