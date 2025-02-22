@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"strings"
@@ -8,19 +9,11 @@ import (
 	"NiftyGoGo/utils"
 )
 
-/**
- * NiftyGoGo - A TUI for fetching stock and crypto prices.
- *
- * This app fetches stock prices from Yahoo Finance and crypto prices from Binance.  
- * Users enter a symbol (e.g., "AAPL" for stocks or "BTCUSDT" for crypto),  
- * and the price is fetched and displayed in a terminal UI.
- *
- * Usage:
- *    go run main.go stock   -> Fetch stock prices  
- *    go run main.go crypto  -> Fetch crypto prices  
- */
+/*
+This main file prompts the user to choose a mode.
+It then launches the appropriate TUI for stock or crypto prices.
+*/
 
-// URLs holds API endpoints
 var URLs = struct {
 	Stock  string
 	Crypto string
@@ -30,28 +23,27 @@ var URLs = struct {
 }
 
 func main() {
-	// check: ensure mode argument exists
-	if len(os.Args) < 2 {
-		fmt.Println("Usage: go run main.go [stock|crypto]")
+	// prompt: ask the user for input
+	fmt.Println("Enter 'stock' for Stock Prices or 'crypto' for Crypto Prices:")
+	reader := bufio.NewReader(os.Stdin)
+	choice, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Println("Error reading input:", err)
 		os.Exit(1)
 	}
-
-	// convert: normalize input
-	mode := strings.ToLower(os.Args[1])
+	// normalize: remove extra spaces and lower-case the input
+	mode := strings.TrimSpace(strings.ToLower(choice))
 
 	switch mode {
 	case "stock":
-		// call: stock TUI using Yahoo Finance
+		// call: start stock TUI
 		utils.DispStockPrice(URLs.Stock)
-
 	case "crypto":
-		// call: crypto TUI using Binance
+		// call: start crypto TUI
 		utils.DispCryptoPrice(URLs.Crypto)
-
 	default:
-		// error: invalid argument
-		fmt.Println("Invalid argument. Use 'stock' or 'crypto'.")
+		// error: invalid input
+		fmt.Println("Invalid choice. Please run the program again and choose either 'stock' or 'crypto'.")
 		os.Exit(1)
 	}
 }
-
