@@ -23,24 +23,29 @@ type QuoteResponse struct {
 }
 
 // GetStockPrice fetches the stock price for a given symbol from the provided API URL
-func GetStockPrice(apiURL, symbol string) float64 {
-	// fetch: GET request to Yahoo Finance API
-	url := fmt.Sprintf("%s?symbols=%s", apiURL, symbol)
-	resp, err := http.Get(url)
-	Check(err)
+
+func GetStockPrice(url, symbol string) (float64, error) {
+	// fetch: from Yahoo Finance API
+	resp, err := http.Get(fmt.Sprintf("%s?symbols=%s", url, symbol))
+	if err != nil {
+		return 0, err
+	}
 	defer resp.Body.Close()
 
 	// decode: JSON response into QuoteResponse struct
 	var data QuoteResponse
 	err = json.NewDecoder(resp.Body).Decode(&data)
-	Check(err)
+	if err != nil {
+		return 0, err
+	}
 
-	// validate: check if response contains stock data
+	// check: if the response contains stock data
 	if len(data.QuoteResponse.Result) == 0 {
-		panic(fmt.Sprintf("no data found for symbol: %s", symbol))
+		return 0, fmt.Errorf("no data found for symbol: %s", symbol)
 	}
 
 	// return: stock price of the requested symbol
-	return data.QuoteResponse.Result[0].RegularMarketPrice
+	return data.QuoteResponse.Result[0].RegularMarketPrice, nil
 }
+
 
